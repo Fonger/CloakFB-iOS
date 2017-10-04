@@ -215,6 +215,14 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
         }
         decisionHandler(.allow)
     }
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        if navigationAction.targetFrame == nil, let url = navigationAction.request.url {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            }
+        }
+        return nil
+    }
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         if currentPage == .Messenger, !UserDefaults.standard.bool(forKey: "friendsSidebar") {
             webView.evaluateJavaScript("document.querySelector('._1enh').style='display:none'", completionHandler: nil)

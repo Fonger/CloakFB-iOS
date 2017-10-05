@@ -292,7 +292,7 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
                 document.documentElement.appendChild(meta);
 
                 var style = document.createElement('style');
-        style.innerHTML = 'body { overflow: hidden !important; max-width: 100% !important; max-height: 100% !important; } ._4sp8 { min-width: 0 !important; } ._p0g.error, ._39bj:nth-child(2), ._fl2 li:not(:last-child) \(showFriendsSideBar ? "" : ", ._1enh") { display: none !important; }';
+        style.innerHTML = 'body { overflow: hidden !important; max-width: 100% !important; max-height: 100% !important; } ._4sp8 { min-width: 0 !important; } ._p0g.error, ._39bj:nth-child(2), ._fl2 li:not(:last-child) \(showFriendsSideBar ? "" : ", ._1enh") { display: none !important; } * { -webkit-tap-highlight-color: rgba(0,0,0,0); }';
                 document.documentElement.appendChild(style);
 
                 history.pushState = function (state, title, url) {

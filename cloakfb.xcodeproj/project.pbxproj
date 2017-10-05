@@ -12,6 +12,7 @@
 		916727CB1F834D4200121B14 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 916727C91F834D4200121B14 /* Main.storyboard */; };
 		916727CD1F834D4200121B14 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 916727CC1F834D4200121B14 /* Assets.xcassets */; };
 		916727D01F834D4200121B14 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 916727CE1F834D4200121B14 /* LaunchScreen.storyboard */; };
+		91C14F4F1F86A713005436CC /* Preference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91C14F4E1F86A713005436CC /* Preference.swift */; };
 		E464E0B99CDD066378A2AA4E /* Pods_cloakfb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C66EED6DED4209B223CB4D15 /* Pods_cloakfb.framework */; };
 /* End PBXBuildFile section */
 
@@ -25,6 +26,7 @@
 		916727CF1F834D4200121B14 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		916727D11F834D4200121B14 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		919690D91F848B4600865599 /* cloakfb-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "cloakfb-Bridging-Header.h"; sourceTree = "<group>"; };
+		91C14F4E1F86A713005436CC /* Preference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preference.swift; sourceTree = "<group>"; };
 		C66EED6DED4209B223CB4D15 /* Pods_cloakfb.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_cloakfb.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D630B4F21FA7A63F0CC14215 /* Pods-cloakfb.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-cloakfb.release.xcconfig"; path = "Pods/Target Support Files/Pods-cloakfb/Pods-cloakfb.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -78,6 +80,7 @@
 				916727CE1F834D4200121B14 /* LaunchScreen.storyboard */,
 				916727D11F834D4200121B14 /* Info.plist */,
 				919690D91F848B4600865599 /* cloakfb-Bridging-Header.h */,
+				91C14F4E1F86A713005436CC /* Preference.swift */,
 			);
 			path = cloakfb;
 			sourceTree = "<group>";
@@ -221,6 +224,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				916727C81F834D4200121B14 /* ViewController.swift in Sources */,
+				91C14F4F1F86A713005436CC /* Preference.swift in Sources */,
 				916727C61F834D4200121B14 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

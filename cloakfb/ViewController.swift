@@ -8,7 +8,6 @@
 
 import UIKit
 import WebKit
-import AudioToolbox
 
 class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UIScrollViewDelegate {
 
@@ -22,13 +21,17 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
     var bottomRefreshControl: UIRefreshControl!
     let homepageUrl = URL(string: "https://www.messenger.com")!
     var currentPage = CurrentPage.Messenger
+
     let impactFeedback = UIImpactFeedbackGenerator(style: .light)
 
     @objc func onSwipe(_ sender: UISwipeGestureRecognizer) {
         if currentPage == .Messenger {
-            print(sender.direction)
-            impactFeedback.impactOccurred()
             let showSidebar = sender.direction == .right
+            if showSidebar == Preference.shared.showFriendsSidebar {
+                return
+            }
+            
+            impactFeedback.impactOccurred()
 
             if showSidebar {
                 webView.evaluateJavaScript("document.querySelector('._1enh').style='display:unset !important'", completionHandler: nil)
@@ -36,9 +39,8 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
                 webView.evaluateJavaScript("document.querySelector('._1enh').style='display:none !important'", completionHandler: nil)
             }
 
-            UserDefaults.standard.set(showSidebar, forKey: "friendsSidebar")
+            Preference.shared.showFriendsSidebar = showSidebar
             preinjectScript(showFriendsSideBar: showSidebar)
-            UserDefaults.standard.synchronize()
         }
     }
     override func viewDidLoad() {
@@ -81,7 +83,6 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
         view.addGestureRecognizer(swipeLeft)
         view.addGestureRecognizer(swipeRight)
         
-        UserDefaults.standard.register(defaults: ["friendsSidebar": true])
         impactFeedback.prepare()
         
         let ruleJSON = """
@@ -213,7 +214,7 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
             }
 
             self.wkConfig.userContentController.add(ruleList);
-            self.preinjectScript(showFriendsSideBar: UserDefaults.standard.bool(forKey: "friendsSidebar"))
+            self.preinjectScript(showFriendsSideBar: Preference.shared.showFriendsSidebar)
 
             self.webView.load(URLRequest(url: self.homepageUrl))
         }

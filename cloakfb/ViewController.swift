@@ -19,7 +19,7 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
     var webView: WKWebView!
     var wkConfig: WKWebViewConfiguration!
     var refreshControl: UIRefreshControl!
-    var bottomRefreshIndicator: UIActivityIndicatorView!
+    var bottomRefreshControl: UIRefreshControl!
     let homepageUrl = URL(string: "https://www.messenger.com")!
     var currentPage = CurrentPage.Messenger
     let impactFeedback = UIImpactFeedbackGenerator(style: .light)
@@ -53,14 +53,19 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
         refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(self.refreshWebView(_:)), for: UIControlEvents.valueChanged)
         
+        bottomRefreshControl = UIRefreshControl()
+        bottomRefreshControl.addTarget(self, action: #selector(self.refreshWebView(_:)), for: UIControlEvents.valueChanged)
+        bottomRefreshControl.triggerVerticalOffset = 100
+        
         webView.scrollView.addSubview(refreshControl)
+        webView.scrollView.bottomRefreshControl = bottomRefreshControl
         webView.scrollView.keyboardDismissMode = .interactive
-        webView.scrollView.delegate = self
+        webView.scrollView.contentInsetAdjustmentBehavior = .never
+
         webView.allowsBackForwardNavigationGestures = true
         
         view.addSubview(webView)
         webView.translatesAutoresizingMaskIntoConstraints = false
-        webView.scrollView.contentInsetAdjustmentBehavior = .never
         
         NSLayoutConstraint.activate([
             webView.leadingAnchor.constraint(equalTo: guide.leadingAnchor),
@@ -68,11 +73,6 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
             webView.topAnchor.constraint(equalTo: guide.topAnchor),
             webView.bottomAnchor.constraint(equalTo: guide.bottomAnchor),
         ])
-
-        bottomRefreshIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
-        bottomRefreshIndicator.color = UIColor.gray
-        bottomRefreshIndicator.center = CGPoint(x: guide.layoutFrame.width / 2, y: guide.layoutFrame.maxY + 20)
-        webView.scrollView.addSubview(bottomRefreshIndicator)
         
         let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(self.onSwipe(_:)))
         let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(self.onSwipe(_:)))
@@ -265,40 +265,21 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
     }
 
     @objc func refreshWebView(_ sender: UIRefreshControl) {
-        refreshControl.endRefreshing()
+        sender.endRefreshing()
+
+        if (sender == bottomRefreshControl) {
+            impactFeedback.impactOccurred()
+        }
+        
         if let url = webView.url {
             webView.load(URLRequest(url: url))
         } else {
             webView.load(URLRequest(url: homepageUrl))
         }
     }
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentOffset.y > 20, currentPage == .Messenger {
-            bottomRefreshIndicator.startAnimating()
-            bottomRefreshIndicator.alpha = (scrollView.contentOffset.y - 20) / 100
-        }
-    }
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if scrollView.contentOffset.y > 100, currentPage == .Messenger {
-            bottomRefreshIndicator.stopAnimating()
-            webView.reload()
-        }
-    }
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        bottomRefreshIndicator.stopAnimating()
-    }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-
-        coordinator.animate(alongsideTransition: { (context) in
-        }) { (context) in
-            let guide = self.view.safeAreaLayoutGuide
-            self.bottomRefreshIndicator.center = CGPoint(x: guide.layoutFrame.width / 2, y: guide.layoutFrame.maxY + 20)
-        }
     }
     
     func preinjectScript(showFriendsSideBar: Bool) {

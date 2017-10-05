@@ -12,9 +12,11 @@
 		916727CB1F834D4200121B14 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 916727C91F834D4200121B14 /* Main.storyboard */; };
 		916727CD1F834D4200121B14 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 916727CC1F834D4200121B14 /* Assets.xcassets */; };
 		916727D01F834D4200121B14 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 916727CE1F834D4200121B14 /* LaunchScreen.storyboard */; };
+		E464E0B99CDD066378A2AA4E /* Pods_cloakfb.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C66EED6DED4209B223CB4D15 /* Pods_cloakfb.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		45760D5EE5986C0475CD844C /* Pods-cloakfb.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-cloakfb.debug.xcconfig"; path = "Pods/Target Support Files/Pods-cloakfb/Pods-cloakfb.debug.xcconfig"; sourceTree = "<group>"; };
 		916727C21F834D4200121B14 /* cloakfb.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cloakfb.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		916727C51F834D4200121B14 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		916727C71F834D4200121B14 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -23,6 +25,8 @@
 		916727CF1F834D4200121B14 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		916727D11F834D4200121B14 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		919690D91F848B4600865599 /* cloakfb-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "cloakfb-Bridging-Header.h"; sourceTree = "<group>"; };
+		C66EED6DED4209B223CB4D15 /* Pods_cloakfb.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_cloakfb.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D630B4F21FA7A63F0CC14215 /* Pods-cloakfb.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-cloakfb.release.xcconfig"; path = "Pods/Target Support Files/Pods-cloakfb/Pods-cloakfb.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30,17 +34,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E464E0B99CDD066378A2AA4E /* Pods_cloakfb.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8B9B46214C6BD29C3E52A173 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				45760D5EE5986C0475CD844C /* Pods-cloakfb.debug.xcconfig */,
+				D630B4F21FA7A63F0CC14215 /* Pods-cloakfb.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		916727B91F834D4200121B14 = {
 			isa = PBXGroup;
 			children = (
 				916727C41F834D4200121B14 /* cloakfb */,
 				916727C31F834D4200121B14 /* Products */,
+				8B9B46214C6BD29C3E52A173 /* Pods */,
+				9596DF4D8A49915CAAE216E0 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -66,6 +82,14 @@
 			path = cloakfb;
 			sourceTree = "<group>";
 		};
+		9596DF4D8A49915CAAE216E0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C66EED6DED4209B223CB4D15 /* Pods_cloakfb.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -73,9 +97,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 916727D41F834D4200121B14 /* Build configuration list for PBXNativeTarget "cloakfb" */;
 			buildPhases = (
+				62AD7417CE4BA5149037B94D /* [CP] Check Pods Manifest.lock */,
 				916727BE1F834D4200121B14 /* Sources */,
 				916727BF1F834D4200121B14 /* Frameworks */,
 				916727C01F834D4200121B14 /* Resources */,
+				7A70AF76EC17BB1B2E790D17 /* [CP] Embed Pods Frameworks */,
+				219C158D95B0D0FFB32ED1C1 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -133,6 +160,60 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		219C158D95B0D0FFB32ED1C1 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-cloakfb/Pods-cloakfb-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		62AD7417CE4BA5149037B94D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-cloakfb-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7A70AF76EC17BB1B2E790D17 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-cloakfb/Pods-cloakfb-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/CCBottomRefreshControl/CCBottomRefreshControl.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CCBottomRefreshControl.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-cloakfb/Pods-cloakfb-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		916727BE1F834D4200121B14 /* Sources */ = {
@@ -275,6 +356,7 @@
 		};
 		916727D51F834D4200121B14 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 45760D5EE5986C0475CD844C /* Pods-cloakfb.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -293,6 +375,7 @@
 		};
 		916727D61F834D4200121B14 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D630B4F21FA7A63F0CC14215 /* Pods-cloakfb.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

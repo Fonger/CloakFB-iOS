@@ -28,13 +28,16 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
         if currentPage == .Messenger {
             print(sender.direction)
             impactFeedback.impactOccurred()
-            if sender.direction == .right {
-                webView.evaluateJavaScript("document.querySelector('._1enh').style='display:normal'", completionHandler: nil)
-                UserDefaults.standard.set(true, forKey: "friendsSidebar")
+            let showSidebar = sender.direction == .right
+
+            if showSidebar {
+                webView.evaluateJavaScript("document.querySelector('._1enh').style='display:unset !important'", completionHandler: nil)
             } else {
-                webView.evaluateJavaScript("document.querySelector('._1enh').style='display:none'", completionHandler: nil)
-                UserDefaults.standard.set(false, forKey: "friendsSidebar")
+                webView.evaluateJavaScript("document.querySelector('._1enh').style='display:none !important'", completionHandler: nil)
             }
+
+            UserDefaults.standard.set(showSidebar, forKey: "friendsSidebar")
+            preinjectScript(showFriendsSideBar: showSidebar)
             UserDefaults.standard.synchronize()
         }
     }
@@ -85,7 +88,7 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
             [
                 {
                     "trigger": {
-                        "url-filter": ".*/ajax/messaging/typ.php.*"
+                        "url-filter": "https://www.facebook.com/ajax/messaging/typ.php.*"
                     },
                     "action": {
                         "type": "block"
@@ -93,7 +96,7 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
                 },
                 {
                     "trigger": {
-                        "url-filter": ".*/ajax/mercury/delivery_receipts.php.*"
+                        "url-filter": "https://www.messenger.com/ajax/messaging/typ.php.*"
                     },
                     "action": {
                         "type": "block"
@@ -101,7 +104,7 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
                 },
                 {
                     "trigger": {
-                        "url-filter": ".*/ajax/mercury/change_read_status.php.*"
+                        "url-filter": "https://www.facebook.com/ajax/mercury/delivery_receipts.php.*"
                     },
                     "action": {
                         "type": "block"
@@ -109,7 +112,31 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
                 },
                 {
                     "trigger": {
-                        "url-filter": ".*/ajax/chat/.*"
+                        "url-filter": "https://www.messenger.com/ajax/mercury/delivery_receipts.php.*"
+                    },
+                    "action": {
+                        "type": "block"
+                    }
+                },
+                {
+                    "trigger": {
+                        "url-filter": "https://www.facebook.com/ajax/mercury/change_read_status.php.*"
+                    },
+                    "action": {
+                        "type": "block"
+                    }
+                },
+                {
+                    "trigger": {
+                        "url-filter": "https://www.messenger.com/ajax/mercury/change_read_status.php.*"
+                    },
+                    "action": {
+                        "type": "block"
+                    }
+                },
+                {
+                    "trigger": {
+                        "url-filter": "https://www.facebook.com/ajax/chat/.*"
                     },
                     "action": {
                         "type": "block"
@@ -138,6 +165,38 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
                     "action": {
                         "type": "block"
                     }
+                },
+                {
+                    "trigger": {
+                        "url-filter": "https://www.facebook.com/ajax/bz"
+                    },
+                    "action": {
+                        "type": "block"
+                    }
+                },
+                {
+                    "trigger": {
+                        "url-filter": "https://m.facebook.com/ajax/a/bz"
+                    },
+                    "action": {
+                        "type": "block"
+                    }
+                },
+                {
+                    "trigger": {
+                        "url-filter": "https://www.facebook.com/common/scribe_endpoint.php.*"
+                    },
+                    "action": {
+                        "type": "block"
+                    }
+                },
+                {
+                    "trigger": {
+                        "url-filter": "https://www.messenger.com/common/scribe_endpoint.php.*"
+                    },
+                    "action": {
+                        "type": "block"
+                    }
                 }
             ]
         """;
@@ -153,36 +212,8 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
                 return
             }
 
-            let meta = """
-(function(pushState, replaceState){
-    var meta = document.createElement('meta');
-    meta.name = 'viewport';
-    meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-    document.head.appendChild(meta);
-
-    var style = document.createElement('style');
-    style.innerHTML = 'body { overflow: hidden !important; max-width: 100% !important; max-height: 100% !important; } ._4sp8 { min-width: 0 !important; } ._p0g.error, ._n4sp8>._1enh, ._39bj:nth-child(2), ._fl2 li:not(:last-child) { display: none !important; }';
-    document.body.appendChild(style);
-
-    history.pushState = function (state, title, url) {
-        if (url && url.indexOf('messages') > 0 ) {
-            location.href = "https://www.messenger.com";
-            return false;
-        }
-        return pushState.apply(this, arguments);
-    }
-    history.replaceState = function (state, title, url) {
-        if (url && url.indexOf('messages') > 0 ) {
-            location.href = "https://www.messenger.com";
-            return false;
-        }
-        return replaceState.apply(this, arguments);
-    }
-
-})(history.pushState, history.replaceState)
-"""
             self.wkConfig.userContentController.add(ruleList);
-            self.wkConfig.userContentController.addUserScript(WKUserScript(source: meta, injectionTime: .atDocumentEnd, forMainFrameOnly: true))
+            self.preinjectScript(showFriendsSideBar: UserDefaults.standard.bool(forKey: "friendsSidebar"))
 
             self.webView.load(URLRequest(url: self.homepageUrl))
         }
@@ -268,6 +299,38 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
             let guide = self.view.safeAreaLayoutGuide
             self.bottomRefreshIndicator.center = CGPoint(x: guide.layoutFrame.width / 2, y: guide.layoutFrame.maxY + 20)
         }
+    }
+    
+    func preinjectScript(showFriendsSideBar: Bool) {
+        let script = """
+            (function(pushState, replaceState){
+                var meta = document.createElement('meta');
+                meta.name = 'viewport';
+                meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+                document.documentElement.appendChild(meta);
 
+                var style = document.createElement('style');
+        style.innerHTML = 'body { overflow: hidden !important; max-width: 100% !important; max-height: 100% !important; } ._4sp8 { min-width: 0 !important; } ._p0g.error, ._39bj:nth-child(2), ._fl2 li:not(:last-child) \(showFriendsSideBar ? "" : ", ._1enh") { display: none !important; }';
+                document.documentElement.appendChild(style);
+
+                history.pushState = function (state, title, url) {
+                    if (url && url.indexOf('messages') > 0 ) {
+                        location.href = "https://www.messenger.com";
+                        return false;
+                    }
+                    return pushState.apply(this, arguments);
+                }
+                history.replaceState = function (state, title, url) {
+                    if (url && url.indexOf('messages') > 0 ) {
+                        location.href = "https://www.messenger.com";
+                        return false;
+                    }
+                    return replaceState.apply(this, arguments);
+                }
+
+            })(history.pushState, history.replaceState)
+        """
+        self.wkConfig.userContentController.removeAllUserScripts()
+        self.wkConfig.userContentController.addUserScript(WKUserScript(source: script, injectionTime: .atDocumentStart, forMainFrameOnly: true))
     }
 }

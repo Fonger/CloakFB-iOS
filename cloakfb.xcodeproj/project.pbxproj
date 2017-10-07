@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		91405FE01F88A2D8007FB50F /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91405FDF1F88A2D8007FB50F /* LocalAuthentication.framework */; };
 		916727C61F834D4200121B14 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 916727C51F834D4200121B14 /* AppDelegate.swift */; };
 		916727C81F834D4200121B14 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 916727C71F834D4200121B14 /* ViewController.swift */; };
 		916727CB1F834D4200121B14 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 916727C91F834D4200121B14 /* Main.storyboard */; };
@@ -18,6 +19,7 @@
 
 /* Begin PBXFileReference section */
 		45760D5EE5986C0475CD844C /* Pods-cloakfb.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-cloakfb.debug.xcconfig"; path = "Pods/Target Support Files/Pods-cloakfb/Pods-cloakfb.debug.xcconfig"; sourceTree = "<group>"; };
+		91405FDF1F88A2D8007FB50F /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
 		916727C21F834D4200121B14 /* cloakfb.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cloakfb.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		916727C51F834D4200121B14 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		916727C71F834D4200121B14 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -36,6 +38,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				91405FE01F88A2D8007FB50F /* LocalAuthentication.framework in Frameworks */,
 				E464E0B99CDD066378A2AA4E /* Pods_cloakfb.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -88,6 +91,7 @@
 		9596DF4D8A49915CAAE216E0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				91405FDF1F88A2D8007FB50F /* LocalAuthentication.framework */,
 				C66EED6DED4209B223CB4D15 /* Pods_cloakfb.framework */,
 			);
 			name = Frameworks;

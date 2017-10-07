@@ -8,6 +8,7 @@
 
 import UIKit
 import WebKit
+import LocalAuthentication
 
 class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UIScrollViewDelegate {
 
@@ -216,7 +217,22 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
             self.wkConfig.userContentController.add(ruleList);
             self.preinjectScript(showFriendsSideBar: Preference.shared.showFriendsSidebar)
 
-            self.webView.load(URLRequest(url: self.homepageUrl))
+            if TARGET_OS_SIMULATOR != 0 {
+                self.webView.load(URLRequest(url: self.homepageUrl))
+            } else {
+                let context = LAContext()
+                var error: NSError?
+                if context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthentication, error: &error) {
+                    context.evaluatePolicy(LAPolicy.deviceOwnerAuthentication, localizedReason: "Safe", reply: { (success, error) in
+                        guard success else {
+                            exit(0)
+                        }
+                        DispatchQueue.main.async {
+                            self.webView.load(URLRequest(url: self.homepageUrl))
+                        }
+                    })
+                }
+            }
         }
     }
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {

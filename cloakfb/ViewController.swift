@@ -23,27 +23,7 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
     let homepageUrl = URL(string: "https://www.messenger.com")!
     var currentPage = CurrentPage.Messenger
 
-    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-
-    @objc func onSwipe(_ sender: UISwipeGestureRecognizer) {
-        if currentPage == .Messenger {
-            let showSidebar = sender.direction == .right
-            if showSidebar == Preference.shared.showFriendsSidebar {
-                return
-            }
-            
-            impactFeedback.impactOccurred()
-
-            if showSidebar {
-                webView.evaluateJavaScript("document.querySelector('._1enh').style='display:unset !important'", completionHandler: nil)
-            } else {
-                webView.evaluateJavaScript("document.querySelector('._1enh').style='display:none !important'", completionHandler: nil)
-            }
-
-            Preference.shared.showFriendsSidebar = showSidebar
-            preinjectScript(showFriendsSideBar: showSidebar)
-        }
-    }
+    var impactFeedback: UIImpactFeedbackGenerator?
     override func viewDidLoad() {
         super.viewDidLoad()
         let guide = view.safeAreaLayoutGuide
@@ -83,8 +63,6 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
         swipeLeft.direction = .left
         view.addGestureRecognizer(swipeLeft)
         view.addGestureRecognizer(swipeRight)
-        
-        impactFeedback.prepare()
         
         let ruleJSON = """
             [
@@ -285,7 +263,9 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
         sender.endRefreshing()
 
         if (sender == bottomRefreshControl) {
-            impactFeedback.impactOccurred()
+            impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback?.impactOccurred()
+            impactFeedback = nil
         }
         
         if let url = webView.url {
@@ -294,11 +274,26 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
             webView.load(URLRequest(url: homepageUrl))
         }
     }
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    @objc func onSwipe(_ sender: UISwipeGestureRecognizer) {
+        if currentPage == .Messenger {
+            impactFeedback = UIImpactFeedbackGenerator(style: .light)
+            impactFeedback?.impactOccurred()
+            let showSidebar = sender.direction == .right
+            if showSidebar == Preference.shared.showFriendsSidebar {
+                return
+            }
+            
+            if showSidebar {
+                webView.evaluateJavaScript("document.querySelector('._1enh').style='display:unset !important'", completionHandler: nil)
+            } else {
+                webView.evaluateJavaScript("document.querySelector('._1enh').style='display:none !important'", completionHandler: nil)
+            }
+            
+            Preference.shared.showFriendsSidebar = showSidebar
+            preinjectScript(showFriendsSideBar: showSidebar)
+            impactFeedback = nil
+        }
     }
-    
     func preinjectScript(showFriendsSideBar: Bool) {
         let script = """
             (function(pushState, replaceState){

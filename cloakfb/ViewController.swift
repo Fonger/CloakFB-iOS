@@ -177,6 +177,14 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
                     "action": {
                         "type": "block"
                     }
+                },
+                {
+                    "trigger": {
+                        "url-filter": "https://googleads.g.doubleclick.net/.*"
+                    },
+                    "action": {
+                        "type": "block"
+                    }
                 }
             ]
         """;
@@ -229,6 +237,13 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
                     currentPage = .Facebook
                 case "www.messenger.com":
                     currentPage = .Messenger
+                case "m.me":
+                    currentPage = .Messenger
+                    webView.load(URLRequest(url: URL(string: url.absoluteString.replacingOccurrences(of: "//m.me/", with: "//www.messenger.com/t/"))!))
+                    decisionHandler(.cancel)
+                    return
+                case "staticxx.facebook.com":
+                    break
                 default:
                     print("unknown \(host)")
                     if UIApplication.shared.canOpenURL(url) {
@@ -239,10 +254,15 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
                 }
             }
         }
-        decisionHandler(.allow)
+        
+        /*
+             prevent universal link to Facebook app
+             https://stackoverflow.com/questions/38450586/prevent-universal-links-from-opening-in-wkwebview-uiwebview
+        */
+        decisionHandler(WKNavigationActionPolicy(rawValue: WKNavigationActionPolicy.allow.rawValue + 2)!)
     }
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        if navigationAction.targetFrame == nil, let url = navigationAction.request.url {
+        if navigationAction.targetFrame == nil, let host = navigationAction.request.url?.host, let url = navigationAction.request.url {
             if UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url)
             }
@@ -296,7 +316,7 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
     }
     func preinjectScript(showFriendsSideBar: Bool) {
         let script = """
-            (function(pushState, replaceState){
+            (function(){
                 var meta = document.createElement('meta');
                 meta.name = 'viewport';
                 meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
@@ -306,22 +326,30 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
         style.innerHTML = 'body { overflow: hidden !important; max-width: 100% !important; max-height: 100% !important; } ._4sp8 { min-width: 0 !important; } ._p0g.error, ._39bj:nth-child(2), ._fl2 li:not(:last-child) \(showFriendsSideBar ? "" : ", ._1enh") { display: none !important; } * { -webkit-tap-highlight-color: rgba(0,0,0,0); }';
                 document.documentElement.appendChild(style);
 
-                history.pushState = function (state, title, url) {
-                    if (url && url.indexOf('messages') > 0 ) {
-                        location.href = "https://www.messenger.com";
-                        return false;
+                var tRegexes = [/^\\/messages\\/read\\/\\?tid=([^&]+)/, /^\\/messages\\/thread\\/([^\\/]+)/];
+                var mRegex = /^\\/messages\\/\\?(?:more|ref)/;
+                var hook = function(fn) {
+                    return function(state, title, url) {
+                        if (url) {
+                            for (let regex of tRegexes) {
+                                let match = url.match(regex);
+                                if (match) {
+                                    location.href = 'https://www.messenger.com/t/' + match[1];
+                                    return false;
+                                }
+                            }
+                            if (url.match(mRegex)) {
+                                location.href = 'https://www.messenger.com/';
+                                return false;
+                            }
+                        }
+                        return fn.apply(this, arguments);
                     }
-                    return pushState.apply(this, arguments);
                 }
-                history.replaceState = function (state, title, url) {
-                    if (url && url.indexOf('messages') > 0 ) {
-                        location.href = "https://www.messenger.com";
-                        return false;
-                    }
-                    return replaceState.apply(this, arguments);
-                }
-
-            })(history.pushState, history.replaceState)
+        
+                history.pushState = hook(history.pushState);
+                history.replaceState = hook(history.replaceState);
+            })()
         """
         self.wkConfig.userContentController.removeAllUserScripts()
         self.wkConfig.userContentController.addUserScript(WKUserScript(source: script, injectionTime: .atDocumentStart, forMainFrameOnly: true))

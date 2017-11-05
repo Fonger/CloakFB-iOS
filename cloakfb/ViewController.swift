@@ -20,9 +20,9 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
     var wkConfig: WKWebViewConfiguration!
     var refreshControl: UIRefreshControl!
     var bottomRefreshControl: UIRefreshControl!
-    let homepageUrl = URL(string: "https://www.messenger.com")!
+    let homepageUrl = URL(string: "https://www.messenger.com/")!
     var currentPage = CurrentPage.Messenger
-
+    var keyboardVisible = false
     var impactFeedback: UIImpactFeedbackGenerator?
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,8 +37,8 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
         refreshControl.addTarget(self, action: #selector(self.refreshWebView(_:)), for: UIControlEvents.valueChanged)
         
         bottomRefreshControl = UIRefreshControl()
-        bottomRefreshControl.addTarget(self, action: #selector(self.refreshWebView(_:)), for: UIControlEvents.valueChanged)
         bottomRefreshControl.triggerVerticalOffset = 100
+        bottomRefreshControl.addTarget(self, action: #selector(self.refreshWebView(_:)), for: UIControlEvents.valueChanged)
         
         webView.scrollView.addSubview(refreshControl)
         webView.scrollView.bottomRefreshControl = bottomRefreshControl
@@ -177,14 +177,6 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
                     "action": {
                         "type": "block"
                     }
-                },
-                {
-                    "trigger": {
-                        "url-filter": "https://googleads.g.doubleclick.net/.*"
-                    },
-                    "action": {
-                        "type": "block"
-                    }
                 }
             ]
         """;
@@ -242,6 +234,9 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
                     webView.load(URLRequest(url: URL(string: url.absoluteString.replacingOccurrences(of: "//m.me/", with: "//www.messenger.com/t/"))!))
                     decisionHandler(.cancel)
                     return
+                case "googleads.g.doubleclick.net":
+                    decisionHandler(.cancel)
+                    return
                 case "staticxx.facebook.com":
                     break
                 default:
@@ -262,7 +257,7 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
         decisionHandler(WKNavigationActionPolicy(rawValue: WKNavigationActionPolicy.allow.rawValue + 2)!)
     }
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        if navigationAction.targetFrame == nil, let host = navigationAction.request.url?.host, let url = navigationAction.request.url {
+        if navigationAction.targetFrame == nil, let url = navigationAction.request.url {
             if UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url)
             }
@@ -281,17 +276,23 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
 
     @objc func refreshWebView(_ sender: UIRefreshControl) {
         sender.endRefreshing()
+        var refresh = true
 
         if (sender == bottomRefreshControl) {
-            impactFeedback = UIImpactFeedbackGenerator(style: .light)
-            impactFeedback?.impactOccurred()
-            impactFeedback = nil
+            if (keyboardVisible) {
+                refresh = false
+            } else {
+                impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                impactFeedback?.impactOccurred()
+                impactFeedback = nil
+            }
         }
-        
-        if let url = webView.url {
-            webView.load(URLRequest(url: url))
-        } else {
-            webView.load(URLRequest(url: homepageUrl))
+        if refresh {
+            if let url = webView.url {
+                webView.load(URLRequest(url: url))
+            } else {
+                webView.load(URLRequest(url: homepageUrl))
+            }
         }
     }
     @objc func onSwipe(_ sender: UISwipeGestureRecognizer) {
@@ -323,7 +324,7 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
                 document.documentElement.appendChild(meta);
 
                 var style = document.createElement('style');
-        style.innerHTML = 'body { overflow: hidden !important; max-width: 100% !important; max-height: 100% !important; } ._4sp8 { min-width: 0 !important; } ._p0g.error, ._39bj:nth-child(2), ._fl2 li:not(:last-child) \(showFriendsSideBar ? "" : ", ._1enh") { display: none !important; } * { -webkit-tap-highlight-color: rgba(0,0,0,0); }';
+                style.innerHTML = 'body { overflow: hidden !important; max-width: 100% !important; max-height: 100% !important; } ._4sp8 { min-width: 0 !important; } ._p0g.error, ._39bj:nth-child(2), ._fl2 li:not(:last-child) \(showFriendsSideBar ? "" : ", ._1enh") { display: none !important; } * { -webkit-tap-highlight-color: rgba(0,0,0,0); }';
                 document.documentElement.appendChild(style);
 
                 var tRegexes = [/^\\/messages\\/read\\/\\?tid=([^&]+)/, /^\\/messages\\/thread\\/([^\\/]+)/];
@@ -353,5 +354,21 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
         """
         self.wkConfig.userContentController.removeAllUserScripts()
         self.wkConfig.userContentController.addUserScript(WKUserScript(source: script, injectionTime: .atDocumentStart, forMainFrameOnly: true))
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillDisappear), name: Notification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillAppear), name: Notification.Name.UIKeyboardWillShow, object: nil)
+    }
+    
+    @objc func keyboardWillAppear() {
+        keyboardVisible = true
+    }
+    
+    @objc func keyboardWillDisappear() {
+        keyboardVisible = false
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
     }
 }

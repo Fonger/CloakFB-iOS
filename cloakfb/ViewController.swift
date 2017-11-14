@@ -225,6 +225,10 @@ class ViewController: UIViewController, WKUIDelegate, WKNavigationDelegate, UISc
                     webView.load(URLRequest(url: URL(string: url.absoluteString.replacingOccurrences(of: "//www", with: "//m"))!))
                     decisionHandler(.cancel)
                     return
+                case "facebook.com":
+                    webView.load(URLRequest(url: URL(string: url.absoluteString.replacingOccurrences(of: "//face", with: "//m.face"))!))
+                    decisionHandler(.cancel)
+                    return
                 case "m.facebook.com":
                     currentPage = .Facebook
                 case "www.messenger.com":
